@@ -1,0 +1,39 @@
+# /etc/filebeat/filebeat.yml on IDS-01
+# After placing this file:
+#   sudo filebeat keystore create
+#   sudo filebeat keystore add ELASTIC_PASSWORD   # resolves ${ELASTIC_PASSWORD} below
+#   sudo filebeat modules enable suricata
+#   Edit /etc/filebeat/modules.d/suricata.yml:
+#     eve:
+#       enabled: true
+#       var.paths: ["/var/log/suricata/eve.json"]
+#   sudo filebeat setup -e
+#   sudo systemctl enable --now filebeat
+#
+# This is the source for INC-001 (port scan) detection.
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+processors:
+  - add_fields:
+      target: ""
+      fields:
+        host.name: ids-01
+        lab.asset_criticality: medium
+
+output.elasticsearch:
+  hosts: ["192.168.56.10:9200"]
+  username: "elastic"
+  password: "${ELASTIC_PASSWORD}"
+
+setup.kibana:
+  host: "192.168.56.10:5601"
+
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7

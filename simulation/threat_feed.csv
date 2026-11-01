@@ -1,0 +1,6 @@
+indicator_type,value,description
+domain,secure-paymentportal-update.com,Phishing domain impersonating finance portal
+domain,orion-hr-benefits-verify.net,Phishing domain impersonating HR benefits portal
+url,http://secure-paymentportal-update.com/login,Credential harvesting login page
+sender_domain,accounts-service-noreply.com,Spoofed sender domain used in phishing campaign
+domain,document-share-verify.com,Phishing domain used for malicious attachment link

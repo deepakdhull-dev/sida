@@ -1,0 +1,16 @@
+# /etc/netplan/01-ids01.yaml
+# IDS-01 — 192.168.56.11
+# This host's enp0s8 adapter must also be set to VirtualBox Promiscuous Mode:
+# "Allow All" (VM Settings → Network → Adapter 2 → Advanced), otherwise
+# Suricata only sees IDS-01's own traffic, not the traffic between other VMs.
+network:
+  version: 2
+  ethernets:
+    enp0s3:            # NAT adapter — internet for package installs only
+      dhcp4: true
+    enp0s8:             # Host-only adapter — lab network, promiscuous
+      dhcp4: false
+      addresses:
+        - 192.168.56.11/24
+      nameservers:
+        addresses: [1.1.1.1]

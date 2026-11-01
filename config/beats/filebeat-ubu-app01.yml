@@ -1,0 +1,42 @@
+# /etc/filebeat/filebeat.yml on UBU-APP01
+# After placing this file:
+#   sudo filebeat keystore create
+#   sudo filebeat keystore add ELASTIC_PASSWORD   # resolves ${ELASTIC_PASSWORD} below
+#   sudo filebeat modules enable system
+#   Edit /etc/filebeat/modules.d/system.yml (filesets ship disabled in 8.x):
+#     syslog:
+#       enabled: true
+#     auth:
+#       enabled: true
+#   sudo filebeat setup -e
+#   sudo systemctl enable --now filebeat
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+# system module (enabled via `filebeat modules enable system`) ships
+# /var/log/auth.log and /var/log/syslog — this is the source for INC-002
+# (brute force) detection.
+
+processors:
+  - add_fields:
+      target: ""
+      fields:
+        host.name: ubu-app01
+        lab.asset_criticality: high
+
+output.elasticsearch:
+  hosts: ["192.168.56.10:9200"]
+  username: "elastic"
+  password: "${ELASTIC_PASSWORD}"
+
+setup.kibana:
+  host: "192.168.56.10:5601"
+
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7

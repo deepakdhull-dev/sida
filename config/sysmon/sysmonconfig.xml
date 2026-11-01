@@ -1,0 +1,37 @@
+<!--
+  Minimal Sysmon configuration for WIN-FS01.
+  Scope limited to what INC-003 (malware simulation) detection requires:
+    Event ID 1  — Process creation (parent/child spawn)
+    Event ID 3  — Network connection (outbound beacon to KALI-ATK01:8080)
+    Event ID 11 — File create (dropped artifact)
+  All other event types are left disabled to keep log volume low on a
+  resource-constrained lab host.
+-->
+<Sysmon schemaversion="4.90">
+  <EventFiltering>
+
+    <ProcessCreate onmatch="include">
+      <Image condition="end with">cmd.exe</Image>
+      <Image condition="end with">powershell.exe</Image>
+      <Image condition="end with">whoami.exe</Image>
+    </ProcessCreate>
+
+    <NetworkConnect onmatch="include">
+      <DestinationIp condition="is">192.168.56.50</DestinationIp>
+      <DestinationPort condition="is">8080</DestinationPort>
+    </NetworkConnect>
+
+    <FileCreate onmatch="include">
+      <TargetFilename condition="contains">Lab</TargetFilename>
+      <TargetFilename condition="contains">eicar</TargetFilename>
+    </FileCreate>
+
+    <!-- High-volume types disabled. In Sysmon an EMPTY "include" rule
+         logs nothing; an empty "exclude" rule would log EVERYTHING. -->
+    <ImageLoad onmatch="include" />
+    <RegistryEvent onmatch="include" />
+    <PipeEvent onmatch="include" />
+    <DnsQuery onmatch="include" />
+
+  </EventFiltering>
+</Sysmon>

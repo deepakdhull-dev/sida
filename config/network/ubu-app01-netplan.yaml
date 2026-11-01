@@ -1,0 +1,13 @@
+# /etc/netplan/01-ubuapp01.yaml
+# UBU-APP01 — 192.168.56.20
+network:
+  version: 2
+  ethernets:
+    enp0s3:            # NAT adapter — internet for package installs only
+      dhcp4: true
+    enp0s8:             # Host-only adapter — lab network
+      dhcp4: false
+      addresses:
+        - 192.168.56.20/24
+      nameservers:
+        addresses: [1.1.1.1]

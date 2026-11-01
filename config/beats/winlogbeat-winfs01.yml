@@ -1,0 +1,43 @@
+# C:\Program Files\Winlogbeat\winlogbeat.yml on WIN-FS01
+# Install Sysmon BEFORE enabling this config (config/sysmon/install-sysmon.ps1),
+# or the Sysmon channel below will not exist.
+#
+# Setup (PowerShell, as Administrator, from the Winlogbeat install dir):
+#   .\winlogbeat.exe keystore create
+#   .\winlogbeat.exe keystore add ELASTIC_PASSWORD   # resolves ${ELASTIC_PASSWORD} below
+#   .\winlogbeat.exe setup -e
+#   Start-Service winlogbeat
+
+winlogbeat.event_logs:
+  - name: Security
+    ignore_older: 72h
+  - name: System
+    ignore_older: 72h
+  - name: Application
+    ignore_older: 72h
+  - name: Microsoft-Windows-Sysmon/Operational
+    ignore_older: 72h
+  - name: Microsoft-Windows-Windows Defender/Operational
+    ignore_older: 72h
+
+processors:
+  - add_fields:
+      target: ""
+      fields:
+        host.name: win-fs01
+        lab.asset_criticality: critical
+
+output.elasticsearch:
+  hosts: ["192.168.56.10:9200"]
+  username: "elastic"
+  password: "${ELASTIC_PASSWORD}"
+
+setup.kibana:
+  host: "192.168.56.10:5601"
+
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: 'C:\ProgramData\winlogbeat\logs'
+  name: winlogbeat
+  keepfiles: 7

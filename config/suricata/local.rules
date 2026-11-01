@@ -1,0 +1,9 @@
+# local.rules on IDS-01
+# One custom rule, scoped to this project's INC-001 detection.
+# Does not depend on Emerging Threats (ET Open) being installed.
+#
+# Fires when a single source sends 20+ TCP SYN packets to any host in
+# HOME_NET within a 5 second window — matches the nmap -sS sweep used in
+# simulation/portscan.sh.
+
+alert tcp any any -> $HOME_NET any (msg:"LAB CUSTOM Possible TCP Port Scan Detected"; flow:stateless; flags:S; threshold: type threshold, track by_src, count 20, seconds 5; classtype:attempted-recon; sid:1000001; rev:1;)
